@@ -91,7 +91,8 @@ class IdDialog(QtGui.QDialog, main_ui.Ui_Form):
         # FIXME: Maya does not recognize new AOVS until render layer switch
         # Switch to master layer and back to force refresh
         # Need tp fix this
-        user_layer = cmds.editRenderLayerGlobals(query=True, currentRenderLayer=True)
+        user_layer = cmds.editRenderLayerGlobals(query=True,
+                                                 currentRenderLayer=True)
 
         cmds.editRenderLayerGlobals(currentRenderLayer="defaultRenderLayer")
         cmds.editRenderLayerGlobals(currentRenderLayer=user_layer)
@@ -148,9 +149,10 @@ class IdDialog(QtGui.QDialog, main_ui.Ui_Form):
         # Get the current scene selection
         scene_selection = cmds.ls(sl=True, long=True) or []
 
-        # Get the valid selected items - items selected in the maya scene which are
-        # added to the tree
-        valid_selection = [x for x in scene_selection if x in tree_items] or None
+        # Get the valid selected items
+        # items selected in the maya scene which are added to the tree
+        valid_selection = [x for x in scene_selection
+                           if x in tree_items] or None
 
         # If we don't have a valid selection list clear the tree selection
         if valid_selection is None:
@@ -169,7 +171,8 @@ class IdDialog(QtGui.QDialog, main_ui.Ui_Form):
 
         # Select all tree items in the valid selection list
         for item in valid_selection:
-            for parent, treeItem in self.aov_tree_list.items_dict[item].iteritems():
+            items_dict = self.aov_tree_list.items_dict[item].iteritems()
+            for parent, treeItem in items_dict:
                 if parent is not None and parent.isExpanded():
                     treeItem.setSelected(True)
 
@@ -197,8 +200,10 @@ class IdDialog(QtGui.QDialog, main_ui.Ui_Form):
         """
 
         self._selection_changed_callback_active = True
-        self._selection_changed_callback = api.MEventMessage.addEventCallback("SelectionChanged",
-                                                                              self._update_selection_callback)
+        self._selection_changed_callback = api.\
+                                           MEventMessage.\
+                                           addEventCallback("SelectionChanged",
+                                                            self._update_selection_callback)
         return
 
     def _deregister_selection_callback(self):
@@ -216,7 +221,8 @@ class IdDialog(QtGui.QDialog, main_ui.Ui_Form):
 
     def closeEvent(self, event):
         """
-        PySide close event used to deregister the selection update callback on ui closes
+        PySide close event used to deregister the selection
+        update callback on ui closes
 
         :param event:
         :return:

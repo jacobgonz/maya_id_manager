@@ -146,7 +146,8 @@ class IdSetTreeView(QtGui.QTreeWidget):
         """
 
         id_item = ElementGroupItem(id_color, parent, self)
-        id_item.color_button.clicked.connect(lambda: self._add_items_to_color(id_item))
+        id_item.color_button.clicked.connect(lambda:
+                                             self._add_items_to_color(id_item))
 
         for obj in id_objects:
             object_item = ElementItem(obj, id_item)
@@ -185,7 +186,8 @@ class IdSetTreeView(QtGui.QTreeWidget):
 
         # Get the id color to drop the items into
         drop_id_color = self.itemAt(event.pos())
-        drop_id_color = self.invisibleRootItem() if drop_id_color is None else drop_id_color
+        drop_id_color = self.invisibleRootItem() \
+                        if drop_id_color is None else drop_id_color
 
         # If the drop position is not valid we pass
         if drop_id_color is None:
@@ -263,7 +265,9 @@ class IdSetTreeView(QtGui.QTreeWidget):
         """
 
         # Get the drop item names
-        drop_names = [x.data(1, QtCore.Qt.UserRole) for x in self.selectedItems()
+        selected_items = self.selectedItems()
+
+        drop_names = [x.data(1, QtCore.Qt.UserRole) for x in selected_items
                       if x.data(0, QtCore.Qt.UserRole) == "object"] or None
 
         # If no drop items return
@@ -271,7 +275,8 @@ class IdSetTreeView(QtGui.QTreeWidget):
             return
 
         # Get the tree widget items for the drop names
-        drop_list = [self.items_dict[drop_name][drop_id_color.parent()] for drop_name in list(set(drop_names))]
+        drop_list = [self.items_dict[drop_name][drop_id_color.parent()]
+                     for drop_name in list(set(drop_names))]
 
         # Update the id color tree widget content list
         self._drop_tree_items(drop_list, drop_id_color)
@@ -290,8 +295,9 @@ class IdSetTreeView(QtGui.QTreeWidget):
             return
 
         # Get the tree selected items which exist inside the maya scene
-        selected_items = [x.data(1, QtCore.Qt.UserRole) for x in self.selectedItems()
-                         if utils.object_exists(str(x.text(0)))] or None
+        selected_items = [x.data(1, QtCore.Qt.UserRole)
+                          for x in self.selectedItems()
+                          if utils.object_exists(str(x.text(0)))] or None
 
         # If not valid items selected we pass
         if selected_items is None:

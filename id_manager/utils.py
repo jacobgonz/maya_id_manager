@@ -24,14 +24,16 @@ def get_layers_aovs():
 
         for aov in scene_aovs:
             attr = "enabled"
-            layer_overrides = cmds.listConnections("%s.%s" % (aov, attr), plugs=1)
+            layer_overrides = cmds.listConnections("%s.%s" % (aov, attr),
+                                                   plugs=1)
 
             # Use attribute value if attribute has no overrides on any layer
             value = cmds.getAttr("%s.%s" % (aov, attr))
 
             if layer_overrides:
                 attribute_plug = False
-                # Use default Render Layer Value if attr is not overriden for a layer
+                # Use default Render Layer Value if attr is
+                # not overriden for a layer
 
                 for layerOver in layer_overrides:
                     if "defaultRenderLayer" == layerOver.split(".")[0]:
@@ -47,7 +49,9 @@ def get_layers_aovs():
 
                 values = [False, True]
 
-                value = values[int(cmds.getAttr(attribute_plug.replace("plug", "value")))]
+                attribute_value = cmds.getAttr(attribute_plug.replace("plug",
+                                                                      "value"))
+                value = values[int(attribute_value)]
 
             if value is True:
                 aov_dict[render_layer].append(aov.split("aiAOV_")[-1])
@@ -72,7 +76,8 @@ def id_objects_dict(id_sets):
     layer_objects = get_render_layer_objects(current_layer) or []
 
     # Return False if render layer has no members
-    layer_objects = [x for x in layer_objects if get_object_primary_visibility(x)] or None
+    layer_objects = [x for x in layer_objects
+                     if get_object_primary_visibility(x)] or None
 
     for idSet in id_sets:
         id_dict[idSet] = {"Red": [],
@@ -101,19 +106,25 @@ def id_objects_dict(id_sets):
             color_attribute = attribute_type + idSet
             alpha_attribute = "%s_Alpha" % color_attribute
 
-            if cmds.attributeQuery(alpha_attribute, node=shape_node, exists=True):
-                attribute_value = cmds.getAttr("%s.%s" % (shape_node, alpha_attribute))[0]
+            if cmds.attributeQuery(alpha_attribute,
+                                   node=shape_node,
+                                   exists=True):
+                attribute_value = cmds.getAttr("%s.%s" % (shape_node,
+                                                          alpha_attribute))[0]
 
                 if "_Alpha" in alpha_attribute and attribute_value == (1, 1, 1):
-                    id_dict[idSet]["Alpha"].append(myObj)
-                    objects_with_id.append(myObj)
+                    id_dict[idSet]["Alpha"].append(object_name)
+                    objects_with_id.append(object_name)
 
                 elif "_Alpha" in alpha_attribute and attribute_value == (-1, -1, -1):
-                    id_dict[idSet]["Alpha_Neg"].append(myObj)
-                    objects_with_id.append(myObj)
+                    id_dict[idSet]["Alpha_Neg"].append(object_name)
+                    objects_with_id.append(object_name)
 
-            if cmds.attributeQuery(color_attribute, node=shape_node, exists=True):
-                attribute_value = cmds.getAttr("%s.%s" % (shape_node, color_attribute))[0]
+            if cmds.attributeQuery(color_attribute,
+                                   node=shape_node,
+                                   exists=True):
+                attribute_value = cmds.getAttr("%s.%s" % (shape_node,
+                                                          color_attribute))[0]
 
                 rbg_value = None
                 for v in attribute_value:
@@ -124,10 +135,11 @@ def id_objects_dict(id_sets):
                         rbg_value = "%s_Neg" % id_colors[attribute_value.index(v)]
 
                 if rbg_value is not None:
-                    id_dict[idSet][rbg_value].append(myObj)
-                    objects_with_id.append(myObj)
+                    id_dict[idSet][rbg_value].append(object_name)
+                    objects_with_id.append(object_name)
 
-        id_dict[idSet]["Holdout"] = filter(lambda x: x not in objects_with_id, id_objects)
+        id_dict[idSet]["Holdout"] = filter(lambda x:
+                                           x not in objects_with_id, id_objects)
 
     return id_dict
 
@@ -156,9 +168,16 @@ def set_attribute_id(object_name, id_set, id_color):
 
         # Add ID Attribute if not exist
         if not cmds.attributeQuery(myAttr, node=shape_node, exists=True):
-            cmds.addAttr(shape_node, ln=myAttr, nn=id_set + ch, uac=1, at="float3")
+            cmds.addAttr(shape_node,
+                         ln=myAttr,
+                         nn=id_set + ch,
+                         uac=1,
+                         at="float3")
             for c in channel_values:
-                cmds.addAttr(shape_node, ln=c + id_set + ch, at="float", p=myAttr)
+                cmds.addAttr(shape_node,
+                             ln=c + id_set + ch,
+                             at="float",
+                             p=myAttr)
 
         # Create a layer Override for all attributes
         cmds.editRenderLayerAdjustment("%s.%s" % (shape_node, myAttr))
@@ -170,7 +189,11 @@ def set_attribute_id(object_name, id_set, id_color):
 
         # Set Id Color as per user input
         if id_color in ch and id_color == "Alpha":
-            cmds.setAttr("%s.%s" % (shape_node, myAttr), 1, 1, 1, type="double3")
+            cmds.setAttr("%s.%s" % (shape_node, myAttr),
+                         1,
+                         1,
+                         1,
+                         type="double3")
 
         if id_color not in ch and ch != "_Alpha":
             cmds.setAttr("%s.%s" % (shape_node, myAttr),
@@ -305,7 +328,8 @@ def get_object_short_name(node):
 def render_layer_accepted_objects():
     """
 
-    :return: a list of the object types accepted as render objects by the id manager
+    :return: a list of the object types accepted as render objects
+    by the id manager
     """
 
     accepted_objects = ["mesh",
@@ -325,7 +349,11 @@ def get_render_layer_objects(render_layer):
     :return: a list of the render layers transform nodes
     """
 
-    layer_objects = list(set(cmds.editRenderLayerMembers(render_layer, q=True, fullNames=True) or [])) or None
+    objects_list = cmds.editRenderLayerMembers(render_layer,
+                                               q=True,
+                                               fullNames=True) or []
+
+    layer_objects = list(set(objects_list)) or None
 
     if layer_objects is None:
         return False
@@ -334,8 +362,12 @@ def get_render_layer_objects(render_layer):
 
     for node in layer_objects:
         if cmds.nodeType(node) != "transform":
-            transform_node = cmds.listRelatives(node, parent=True, fullPath=True)
-            if transform_node and transform_node[0] not in layer_transform_nodes:
+            transform_node = cmds.listRelatives(node,
+                                                parent=True,
+                                                fullPath=True)
+            transform_valid = transform_node[0] not in layer_transform_nodes
+
+            if transform_node and transform_valid:
                 layer_transform_nodes.append(transform_node[0])
         else:
             if node not in layer_transform_nodes:
