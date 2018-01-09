@@ -15,5 +15,7 @@ For help watch the ID Manager section of this video: https://vimeo.com/214507289
 
 - Add the id_manager folder to a location within your PYHTON_PATH
 
-- Run id_manager.main() from the Maya Script Editor
+- From the Maya Script Editor
 
+  - Import the id_manager module: from id_manager import id_manager
+  - Run id_manager.main() 
