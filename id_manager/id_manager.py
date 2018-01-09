@@ -12,13 +12,6 @@ import main_ui
 import main_ui_content
 import id_set_tree
 
-reload(main_ui)
-reload(main_ui_content)
-reload(id_set_tree)
-
-reload(utils)
-reload(pyside_util)
-
 
 class IdDialog(QtGui.QDialog, main_ui.Ui_Form):
     def __init__(self, parent=None):

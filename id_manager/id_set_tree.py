@@ -4,8 +4,6 @@ from PySide import QtGui, QtCore
 
 import utils
 
-reload(utils)
-
 
 class ElementItem(QtGui.QTreeWidgetItem):
     """
