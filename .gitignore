@@ -12,9 +12,10 @@
 .idea/**/dynamic.xml
 .idea/**/uiDesigner.xml
 
-# Gradle:
-.idea/**/gradle.xml
-.idea/**/libraries
-
 # Ignore pyc files
 *.pyc
+
+# Ignore .idea
+
+.idea/
+*.iml
